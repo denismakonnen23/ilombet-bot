@@ -1,10 +1,11 @@
 import telebot
 import requests
 from datetime import datetime
+import os
 
 # === CONFIGURAÇÕES ===
-TOKEN = "8153287953:AAEsrLms2ICNGOY2uqKOHlm0pGUQHbxIu1A"
-API_KEY = "177074678f6469c26f1b885a5a0fb0a6"
+TOKEN = os.getenv ("8153287953:AAEsrLms2ICNGOY2uqKOHlm0pGUQHbxIu1A")
+API_KEY = os.getenv ("177074678f6469c26f1b885a5a0fb0a6")
 bot = telebot.TeleBot(TOKEN)
 HEADERS = {"x-apisports-key": API_KEY}
 
