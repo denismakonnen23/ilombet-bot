@@ -2,6 +2,7 @@ import telebot
 import requests
 from datetime import datetime
 import os
+CHAT_ID = None
 
 # === CONFIGURAÇÕES ===
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -179,6 +180,31 @@ def buscar_jogos_time(message, time):
             bot.send_message(message.chat.id, res)
     else:
         bot.send_message(message.chat.id, f"Nenhum jogo do {time} com over 2.5 hoje.")
+import threading
+import time
+
+# === FUNÇÃO: verificar alertas over 2.5 em loop ===
+def verificar_alertas():
+    while True:
+        try:
+            jogos = buscar_jogos()
+            resultados = analisar_over(jogos)
+            if resultados:
+                for linha in resultados:
+                    bot.send_message(CHAT_ID, f"🚨 ALERTA: Jogo com over 2.5 gols!\n🔥 {linha}")
+        except:
+            print("Erro ao verificar alertas.")
+        time.sleep(3600)  # Verifica a cada 1 hora (3600 segundos)
+
+# === COMANDO /alertas ===
+@bot.message_handler(commands=['alertas'])
+def ativar_alertas(message):
+    global CHAT_ID
+    CHAT_ID = message.chat.id
+    bot.send_message(message.chat.id, "🔔 Alertas de jogos com over 2.5 ativados! A cada 1 hora será feita uma verificação automática.")
+    thread = threading.Thread(target=verificar_alertas)
+    thread.daemon = True
+    thread.start()
 
 # === INICIAR O BOT ===
 bot.polling()
